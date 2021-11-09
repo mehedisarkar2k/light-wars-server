@@ -11,7 +11,6 @@ const port = process.env.PORT || 5000;
 
 // create uri
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.bycfb.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-console.log(uri);
 
 // new client
 const client = new MongoClient(uri, {
@@ -25,6 +24,25 @@ const server = async () => {
     await client.connect();
     const database = client.db("lightWars");
     const userCollection = database.collection("users");
+    const sunglassCollection = database.collection("sunglasses");
+
+    // getting all the glasses
+    app.get("/glasses/", async (req, res) => {
+      const limit = +req.query.limit;
+
+      let result;
+      if (limit) {
+        result = await sunglassCollection
+          .find({})
+          .sort({ _id: -1 })
+          .limit(limit)
+          .toArray();
+      } else {
+        result = await sunglassCollection.find({}).toArray();
+      }
+
+      res.json(result);
+    });
 
     console.log("Light Wars database is connected");
   } finally {
