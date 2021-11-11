@@ -24,6 +24,7 @@ const server = async () => {
     await client.connect();
     const database = client.db("lightWars");
     const userCollection = database.collection("users");
+    const reviewCollection = database.collection("reviews");
     const sunglassCollection = database.collection("sunglasses");
 
     // getting all the glasses
@@ -44,6 +45,22 @@ const server = async () => {
       res.json(result);
     });
 
+    // get all reviews
+    app.get("/reviews", async (req, res) => {
+      const result = await reviewCollection.find({}).toArray();
+
+      res.json(result);
+    });
+
+    // add a review
+    app.post("/review", async (req, res) => {
+      const review = req.body;
+
+      const result = await reviewCollection.insertOne(review);
+      res.send(result);
+    });
+
+    //
     console.log("Light Wars database is connected");
   } finally {
     // await client.close();
