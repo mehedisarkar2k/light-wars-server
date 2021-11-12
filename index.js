@@ -3,7 +3,6 @@ const app = express();
 const cors = require("cors");
 const ObjectId = require("mongodb").ObjectId;
 const { MongoClient } = require("mongodb");
-const { ObjectID } = require("bson");
 
 require("dotenv").config();
 app.use(cors());
@@ -82,6 +81,13 @@ const server = async () => {
     // get all users
     app.get("/users", async (req, res) => {
       const result = await userCollection.find({}).toArray();
+
+      res.json(result);
+    });
+
+    // get a user
+    app.get("/user/:email", async (req, res) => {
+      const result = await userCollection.findOne({ email: req.params.email });
 
       res.json(result);
     });
