@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const ObjectId = require("mongodb").ObjectId;
 const { MongoClient } = require("mongodb");
+const { ObjectID } = require("bson");
 
 require("dotenv").config();
 app.use(cors());
@@ -87,7 +88,7 @@ const server = async () => {
     });
 
     // add a order
-    app.put("/order", async (req, res) => {
+    app.post("/order", async (req, res) => {
       const order = req.body;
 
       const result = await orderCollection.insertOne(order);
@@ -116,6 +117,27 @@ const server = async () => {
       const result = await orderCollection.deleteOne({
         _id: ObjectId(req.params.id),
       });
+
+      res.json(result);
+    });
+
+    app.put("/order", async (req, res) => {
+      const id = req.query.id;
+      const order = req.body;
+
+      const updateDoc = {
+        $set: { order: order },
+      };
+
+      console.log(id);
+
+      const result = await orderCollection.updateOne(
+        { _id: ObjectID(id) },
+        updateDoc,
+        {
+          upsert: false,
+        }
+      );
 
       res.json(result);
     });
