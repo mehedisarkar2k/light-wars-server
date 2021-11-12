@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const ObjectId = require("mongodb").ObjectId;
 const { MongoClient } = require("mongodb");
 
 require("dotenv").config();
@@ -24,8 +25,19 @@ const server = async () => {
     await client.connect();
     const database = client.db("lightWars");
     const userCollection = database.collection("users");
+    const orderCollection = database.collection("orders");
     const reviewCollection = database.collection("reviews");
     const sunglassCollection = database.collection("sunglasses");
+
+    // getting product with id
+    app.get("/glass/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+
+      const result = await sunglassCollection.findOne(query);
+
+      res.json(result);
+    });
 
     // getting all the glasses
     app.get("/glasses/", async (req, res) => {
@@ -58,6 +70,31 @@ const server = async () => {
 
       const result = await reviewCollection.insertOne(review);
       res.send(result);
+    });
+
+    // add a order
+    app.put("/order", async (req, res) => {
+      const order = req.body;
+
+      const result = await orderCollection.insertOne(order);
+      res.send(result);
+    });
+
+    // get all order
+    app.get("/orders", async (req, res) => {
+      // const result = await orderCollection.find({}).toArray();
+
+      const email = req.query.email;
+      console.log(email);
+
+      let result;
+      if (email) {
+        result = await orderCollection.find({ email: email }).toArray();
+      } else {
+        result = await orderCollection.find({}).toArray();
+      }
+
+      res.json(result);
     });
 
     //
