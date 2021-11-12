@@ -40,7 +40,7 @@ const server = async () => {
     });
 
     // getting all the glasses
-    app.get("/glasses/", async (req, res) => {
+    app.get("/glasses", async (req, res) => {
       const limit = +req.query.limit;
 
       let result;
@@ -53,6 +53,20 @@ const server = async () => {
       } else {
         result = await sunglassCollection.find({}).toArray();
       }
+
+      res.json(result);
+    });
+
+    // add new glass
+    app.post("/glasses", async (req, res) => {
+      const result = await sunglassCollection.insertOne(req.body);
+      res.send(result);
+    });
+
+    app.delete("/glasses/:id", async (req, res) => {
+      const result = await sunglassCollection.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
 
       res.json(result);
     });
@@ -93,6 +107,15 @@ const server = async () => {
       } else {
         result = await orderCollection.find({}).toArray();
       }
+
+      res.json(result);
+    });
+
+    // delete order
+    app.delete("/order/:id", async (req, res) => {
+      const result = await orderCollection.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
 
       res.json(result);
     });
