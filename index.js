@@ -79,6 +79,13 @@ const server = async () => {
       res.json(result);
     });
 
+    // get all users
+    app.get("/users", async (req, res) => {
+      const result = await userCollection.find({}).toArray();
+
+      res.json(result);
+    });
+
     // add a review
     app.post("/review", async (req, res) => {
       const review = req.body;
@@ -121,6 +128,7 @@ const server = async () => {
       res.json(result);
     });
 
+    // approve order
     app.put("/order", async (req, res) => {
       const id = req.query.id;
       const order = req.body;
@@ -139,6 +147,22 @@ const server = async () => {
         }
       );
 
+      res.json(result);
+    });
+
+    // add user to db
+    app.put("/users", async (req, res) => {
+      const userData = req.body;
+      const filter = { email: userData.email };
+      const options = { upsert: true };
+      const updatedUser = {
+        $set: { ...userData },
+      };
+      const result = await userCollection.updateOne(
+        filter,
+        updatedUser,
+        options
+      );
       res.json(result);
     });
 
