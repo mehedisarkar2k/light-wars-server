@@ -146,7 +146,7 @@ const server = async () => {
       console.log(id);
 
       const result = await orderCollection.updateOne(
-        { _id: ObjectID(id) },
+        { _id: ObjectId(id) },
         updateDoc,
         {
           upsert: false,
